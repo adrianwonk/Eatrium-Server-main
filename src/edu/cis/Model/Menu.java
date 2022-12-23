@@ -4,7 +4,7 @@ public class Menu {
 
     private ArrayList<MenuItem> eatriumItems;
     private String adminID;
-    private static ArrayList<String> existingIds = new ArrayList<>();
+    private static ArrayList<String> existingIds = new ArrayList<>(); // <-- for adminIds
 
     @Override
     public String toString() {
@@ -19,7 +19,7 @@ public class Menu {
         return result;
     }
 
-    public Menu(String adminID_){
+    public Menu(String adminID_) throws Exception {
         eatriumItems = new ArrayList<MenuItem>();
         setAdminID(adminID_);
     }
@@ -28,13 +28,13 @@ public class Menu {
         return eatriumItems;
     }
 
-    public MenuItem getItem(String id){
+    public boolean eatriumIdExists(String itemId) {
         for (MenuItem value : eatriumItems){
-            if (value.getId().equals(id)){
-                return value;
+            if (value.getId().equals(itemId)){
+                return true;
             }
         }
-        return null;
+        return false;
     }
 
     public void addEatriumItem(MenuItem i) throws Exception {
@@ -46,24 +46,28 @@ public class Menu {
         }
     }
 
-    public boolean eatriumIdExists(String id){
-        for (MenuItem value : eatriumItems){
-            if (value.getId().equals(id)) return true;
-        }
-
-        return false;
-    }
-
-    public void handleOrder(Order o) throws Exception {
+    public void handleOrder(CISUser u, Order o) throws Exception {
         o.orderFulfilled();
         String itemId = o.getItemID();
-        if (eatriumIdExists(itemId)){
-            MenuItem item = getItem(itemId);
-            item.consume();
+        MenuItem item = getEatriumItem(itemId);
+        double price = item.getPrice();
+
+        if (u.getMoney() >= price) {
+            u.setMoney(u.getMoney() - price);
+            item.consume(); // Throws sold out error
         }
         else{
-            throw new Exception(CISConstants.INVALID_MENU_ITEM_ERR);
+            throw new Exception(CISConstants.USER_BROKE_ERR);
         }
+    }
+
+    public MenuItem getEatriumItem(String itemId) throws Exception {
+        for (MenuItem value : eatriumItems){
+            if (value.getId().equals(itemId)){
+                return value;
+            }
+        }
+        throw new Exception(CISConstants.INVALID_MENU_ITEM_ERR);
     }
 
 
@@ -72,25 +76,23 @@ public class Menu {
     }
 
     public String getAdminID() {return adminID;}
-    public int setAdminID(String s){
+
+    public void setAdminID(String s) throws Exception{
         if (existingIds.contains(s)){
-            return -1;
+            throw new Exception(CISConstants.ADMIN_ID_ERR);
         }
 
         if (adminID.isEmpty()){
             adminID = s;
             existingIds.add(s);
-            return existingIds.indexOf(s);
         } else if (existingIds.contains(adminID)){
             existingIds.remove(adminID);
             existingIds.add(s);
             adminID = s;
-            return existingIds.indexOf(s);
         }
         else {
             existingIds.add(s);
             adminID = s;
-            return existingIds.indexOf(s);
         }
     }
 

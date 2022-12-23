@@ -23,7 +23,15 @@ public class CIServer extends ConsoleProgram
     /* The server object. All you need to do is start it */
     private SimpleServer server = new SimpleServer(this, PORT);
     private ArrayList<CISUser> users = new ArrayList<>();
-    private Menu menu = new Menu("3");
+    private Menu menu;
+    {
+        try {
+            menu = new Menu("3");
+        } catch (Exception e) {
+            println(e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
     /**
      * Starts the server running so that when a program sends
@@ -34,6 +42,12 @@ public class CIServer extends ConsoleProgram
     {
         println("Starting server on port " + PORT);
         server.start();
+    }
+
+    public static void main(String[] args)
+    {
+        CIServer f = new CIServer();
+        f.start(args);
     }
 
     /**
@@ -59,17 +73,12 @@ public class CIServer extends ConsoleProgram
 
             case CISConstants.CREATE_USER:
                 return createUser(request);
-                break;
 
             case CISConstants.ADD_MENU_ITEM:
                 return addMenuItem(request);
-                break;
 
             case CISConstants.PLACE_ORDER:
-                placeOrder(request);
-                break;
-
-
+                return placeOrder(request);
 
             default:
                 return "Error: Unknown command " + cmd + ".";
@@ -99,9 +108,8 @@ public class CIServer extends ConsoleProgram
                     return CISConstants.INVALID_MENU_ITEM_ERR;
                 }
 
-                // HANDLE USER BROK
                 Order o = new Order(itemId, orderType, orderId);
-                menu.handleOrder(o);
+                menu.handleOrder(getUser(userId), o); // handles user broke, invalid menu item, sold out
             }
             catch (Exception e){
                 return e.getMessage();
@@ -109,12 +117,19 @@ public class CIServer extends ConsoleProgram
 
 
         }
-
-        // user can afford?
-
-        // order item exist in menu?
-
+        return CISConstants.SUCCESS;
     }
+
+    public CISUser getUser(String uID){
+        for (CISUser value : users){
+            if (value.getUserId().equals(uID)){
+                return value;
+            }
+        }
+
+        return null;
+    }
+
     public int userIndex(String id){
         for (int i = 0; i < users.size(); i ++){
             if (users.get(i).getUserId().equals(id)){
@@ -132,17 +147,17 @@ public class CIServer extends ConsoleProgram
         }
         return false;
     }
-    public String addMenuItem(Request req) throws Exception {
+    public String addMenuItem(Request req) {
         String itemName = req.getParam(CISConstants.ITEM_ID_PARAM);
         String description = req.getParam(CISConstants.DESC_PARAM);
         double price = Double.parseDouble(req.getParam(CISConstants.PRICE_PARAM));
         String type = req.getParam(CISConstants.ITEM_TYPE_PARAM);
-        String id = req.getParam(CISConstants.ITEM_ID_PARAM);;
-
-        MenuItem m = new MenuItem(itemName, description, price, id, CISConstants.DEFAULT_NUMBER_ITEMS, type);
+        String id = req.getParam(CISConstants.ITEM_ID_PARAM);
 
         try {
+            MenuItem m = new MenuItem(itemName, description, price, id, CISConstants.DEFAULT_NUMBER_ITEMS, type);
             menu.addEatriumItem(m);
+            return CISConstants.SUCCESS;
         }
         catch (Exception e){
             return e.getMessage();
@@ -162,12 +177,5 @@ public class CIServer extends ConsoleProgram
         catch(Exception e) {
             return e.getMessage();
         }
-    }
-
-
-    public static void main(String[] args)
-    {
-        CIServer f = new CIServer();
-        f.start(args);
     }
 }

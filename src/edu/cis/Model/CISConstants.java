@@ -16,6 +16,7 @@ public class CISConstants
     public static final String SUCCESS = "success";
     public static final String TRUE_RET = "true";
     public static final String FALSE_RET = "false";
+    public static final String ADMIN_ID_ERR = "Error: Admin ID already exists";
 
     //Parameters for requests
     public static final String ITEM_NAME_PARAM = "menuItemName";
