@@ -3,7 +3,7 @@ import java.util.ArrayList;
 public class Menu {
 
     private ArrayList<MenuItem> eatriumItems;
-    private String adminID;
+    private String adminID = "";
     private static ArrayList<String> existingIds = new ArrayList<>(); // <-- for adminIds
 
     @Override
