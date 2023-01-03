@@ -148,7 +148,7 @@ public class CIServer extends ConsoleProgram
         return false;
     }
     public String addMenuItem(Request req) {
-        String itemName = req.getParam(CISConstants.ITEM_ID_PARAM);
+        String itemName = req.getParam(CISConstants.ITEM_NAME_PARAM);
         String description = req.getParam(CISConstants.DESC_PARAM);
         double price = Double.parseDouble(req.getParam(CISConstants.PRICE_PARAM));
         String type = req.getParam(CISConstants.ITEM_TYPE_PARAM);

@@ -24,7 +24,7 @@ public class CIServerTests extends ConsoleProgram
     }
 
     /* The internet address of the computer running the server */
-    private static final String HOST = "http://localhost:8000";
+    private static final String HOST = "http://localhost:8000/";
 
     /* Run all of the tests */
     public void run()
