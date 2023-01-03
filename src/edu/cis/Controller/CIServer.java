@@ -84,22 +84,65 @@ public class CIServer extends ConsoleProgram
             case CISConstants.GET_USER:
                 return getUser(request);
 
+            case CISConstants.GET_ORDER:
+                return getOrder(request);
+
+            case CISConstants.GET_ITEM:
+                return getItem(request);
+
+            case CISConstants.GET_CART:
+                return getCart(request);
+
             default:
                 return "Error: Unknown command " + cmd + ".";
         }
     }
 
+    public String getCart(Request req){
+        String uID = req.getParam(CISConstants.USER_ID_PARAM);
 
+        if (uID == null) return CISConstants.PARAM_MISSING_ERR;
+
+        if (userExists(uID)) return getUser(uID).getCart();
+        else return CISConstants.USER_INVALID_ERR;
+    }
+    public String getItem(Request req) {
+        String iID = req.getParam(CISConstants.ITEM_ID_PARAM);
+
+        if (iID == null) return CISConstants.PARAM_MISSING_ERR;
+
+        try{
+            MenuItem item = menu.getEatriumItem(iID);
+            return item.toString();
+        }
+        catch (Exception e) {
+            return CISConstants.INVALID_MENU_ITEM_ERR;
+        }
+
+    }
+    public String getOrder(Request req){
+        String uID = req.getParam(CISConstants.USER_ID_PARAM);
+        String oID = req.getParam(CISConstants.ORDER_ID_PARAM);
+
+        if (uID == null || oID == null) return CISConstants.PARAM_MISSING_ERR;
+
+        CISUser u = getUser(uID);
+        Order o = u.getOrder(oID);
+
+        return o.toString();
+    }
     public String getUser(Request req){
         String userId = req.getParam(CISConstants.USER_ID_PARAM);
-        if (userId == null){
-            return CISConstants.PARAM_MISSING_ERR;
-        }
+
+        if (userId == null) return CISConstants.PARAM_MISSING_ERR;
+
         return "" + getUser(userId);
     }
     public String deleteOrder(Request req){
         String orderId = req.getParam(CISConstants.ORDER_ID_PARAM);
         String userId = req.getParam(CISConstants.USER_ID_PARAM);
+
+        if (orderId == null || userId == null) return CISConstants.PARAM_MISSING_ERR;
 
         // user exist?
         if (!userExists(userId)){
@@ -200,9 +243,12 @@ public class CIServer extends ConsoleProgram
         double price = Double.parseDouble(req.getParam(CISConstants.PRICE_PARAM));
         String type = req.getParam(CISConstants.ITEM_TYPE_PARAM);
         String id = req.getParam(CISConstants.ITEM_ID_PARAM);
+        int amountAvail = Integer.parseInt(req.getParam(CISConstants.AMOUNT_AVAIL_PARAM));
+
+        if (itemName == null || description == null || type == null || id == null) return CISConstants.PARAM_MISSING_ERR;
 
         try {
-            MenuItem m = new MenuItem(itemName, description, price, id, CISConstants.DEFAULT_NUMBER_ITEMS, type);
+            MenuItem m = new MenuItem(itemName, description, price, id, amountAvail, type);
             menu.addEatriumItem(m);
             return CISConstants.SUCCESS;
         }

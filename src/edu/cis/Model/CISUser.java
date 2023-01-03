@@ -31,15 +31,27 @@ public class CISUser {
     public String toString() {
 
         String result = "CISUser{userID='" + userId + "', ";
-        result += "name='" + name + "', "
-
-
-        for (Order order : orders){
-            result += "\n";
-            result += order.toString();
+        result += "name='" + name + "', ";
+        result += "yearLevel='" + yearLevel + "', ";
+        result += "orders= ";
+        // ADD ORDERS INTO RESULT
+        for (Order value : orders){
+            result += value + ", ";
         }
 
+        result += "money=" + money + "}";
         return result;
+    }
+
+    public String getCart(){
+        String result = "USER ID: " + userId + ", ";
+        result += "NAME: " + name + ", ";
+        result += "orders= ";
+        // ADD ORDERS INTO RESULT
+        for (Order value : orders){
+            result += value + ", ";
+        }
+        return result.substring(0, result.length() - 2);
     }
 
     public int getYearLevelInt(){

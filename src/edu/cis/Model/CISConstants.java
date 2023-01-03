@@ -29,6 +29,7 @@ public class CISConstants
     public static final String PRICE_PARAM = "price";
     public static final String USER_ID_PARAM = "userID";
     public static final String DESC_PARAM = "description";
+    public static final String AMOUNT_AVAIL_PARAM = "amountAvailable";
 
     //Commands
     //create user

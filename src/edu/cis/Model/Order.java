@@ -21,11 +21,11 @@ public class Order {
 
     @Override
     public String toString() {
-        return "\n\nOrder{" +
-                "itemID='" + itemID + '\'' +
-                ", type='" + type + '\'' +
-                ", orderID='" + orderID + '\'' +
-                '}';
+        String result = "Order{";
+        result += "itemID='" + this.getItemID() + "', ";
+        result += "type='" + this.getType() + "', ";
+        result += "orderID='" + this.getOrderID() + "'}";
+        return result;
     }
 
     public String getItemID() {return itemID;}
