@@ -3,7 +3,7 @@ import java.util.ArrayList;
 public class Menu {
 
     private ArrayList<MenuItem> eatriumItems;
-    private String adminID;
+    private String adminID = "";
     private static ArrayList<String> existingIds = new ArrayList<>(); // <-- for adminIds
 
     @Override
@@ -46,18 +46,14 @@ public class Menu {
         }
     }
 
-    public void handleOrder(CISUser u, Order o) throws Exception {
-        o.orderFulfilled();
-        String itemId = o.getItemID();
-        MenuItem item = getEatriumItem(itemId);
-        double price = item.getPrice();
-
-        if (u.getMoney() >= price) {
-            u.setMoney(u.getMoney() - price);
-            item.consume(); // Throws sold out error
-        }
-        else{
-            throw new Exception(CISConstants.USER_BROKE_ERR);
+    public void handleOrder(CISUser u, String oId) throws Exception {
+        Order o;
+        if (u.hasOrder(oId)){
+            o = u.getOrder(oId);
+            o.orderFulfilled();
+            u.removeOrder(o);
+        } else {
+            throw new Exception(CISConstants.ORDER_INVALID_ERR);
         }
     }
 

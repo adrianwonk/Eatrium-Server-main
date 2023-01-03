@@ -28,11 +28,9 @@ public class CIServer extends ConsoleProgram
         try {
             menu = new Menu("3");
         } catch (Exception e) {
-            println(e.getMessage());
             e.printStackTrace();
         }
     }
-
     /**
      * Starts the server running so that when a program sends
      * a request to this server, the method requestMade is
@@ -80,16 +78,28 @@ public class CIServer extends ConsoleProgram
             case CISConstants.PLACE_ORDER:
                 return placeOrder(request);
 
+            case CISConstants.DELETE_ORDER:
+                return deleteOrder(request);
+
+            case CISConstants.GET_USER:
+                return getUser(request);
+
             default:
                 return "Error: Unknown command " + cmd + ".";
         }
     }
 
-    public String placeOrder(Request req) {
-        String orderId = req.getParam(CISConstants.ORDER_ID_PARAM);
-        String itemId = req.getParam(CISConstants.ITEM_ID_PARAM);
+
+    public String getUser(Request req){
         String userId = req.getParam(CISConstants.USER_ID_PARAM);
-        String orderType = req.getParam(CISConstants.ORDER_TYPE_PARAM);
+        if (userId == null){
+            return CISConstants.PARAM_MISSING_ERR;
+        }
+        return "" + getUser(userId);
+    }
+    public String deleteOrder(Request req){
+        String orderId = req.getParam(CISConstants.ORDER_ID_PARAM);
+        String userId = req.getParam(CISConstants.USER_ID_PARAM);
 
         // user exist?
         if (!userExists(userId)){
@@ -99,17 +109,54 @@ public class CIServer extends ConsoleProgram
         else {
             // get userIndex
             int userIndex = userIndex(userId);
-            if (!users.get(userIndex).hasOrder(orderId)){
-                return CISConstants.ORDER_INVALID_ERR;
-            }
 
             try{
+                menu.handleOrder(users.get(userIndex), orderId);
+            }
+            catch (Exception e){
+                return e.getMessage();
+            }
+        }
+        return CISConstants.SUCCESS;
+    }
+    public String placeOrder(Request req) {
+        String orderId = req.getParam(CISConstants.ORDER_ID_PARAM);
+        String itemId = req.getParam(CISConstants.ITEM_ID_PARAM);
+        String userId = req.getParam(CISConstants.USER_ID_PARAM);
+        String orderType = req.getParam(CISConstants.ORDER_TYPE_PARAM);
+
+        if (orderId == null || itemId == null || userId == null || orderType == null){
+            return CISConstants.PARAM_MISSING_ERR;
+        }
+
+        // user exist?
+        if (!userExists(userId)){
+            return CISConstants.USER_INVALID_ERR;
+        }
+        else {
+            try{
+                CISUser u = getUser(userId);
+
+                if (u.hasOrder(orderId)){
+                    return CISConstants.DUP_ORDER_ERR;
+                }
+
                 if (!menu.eatriumIdExists(itemId)){
                     return CISConstants.INVALID_MENU_ITEM_ERR;
                 }
 
                 Order o = new Order(itemId, orderType, orderId);
-                menu.handleOrder(getUser(userId), o); // handles user broke, invalid menu item, sold out
+                MenuItem item = menu.getEatriumItem(itemId);
+                double price = item.getPrice();
+
+                if (u.getMoney() >= price) {
+                    item.consume(); // Throws sold out error
+                    u.setMoney(u.getMoney() - price);
+                    u.addOrder(o);
+                }
+                else{
+                    throw new Exception(CISConstants.USER_BROKE_ERR);
+                }
             }
             catch (Exception e){
                 return e.getMessage();

@@ -1,6 +1,7 @@
 package edu.cis.Model;
 
 import java.util.ArrayList;
+import java.text.MessageFormat;
 
 public class CISUser {
     private String userId = "";
@@ -28,17 +29,10 @@ public class CISUser {
 
     @Override
     public String toString() {
-        String result = "";
 
-        result += "USERID: " + userId;
-        result += "\n";
-        result += "NAME: " + name;
-        result += "\n";
-        result += "YEARLEVEL: " + yearLevel;
-        result += "\n";
-        result += "MONEY: " + money;
-        result += "\n";
-        result += "ORDERS: ";
+        String result = "CISUser{userID='" + userId + "', ";
+        result += "name='" + name + "', "
+
 
         for (Order order : orders){
             result += "\n";
@@ -92,6 +86,10 @@ public class CISUser {
     public void setYearLevel(String yearLevel_) { yearLevel = yearLevel_; }
     public void setOrders(ArrayList<Order> orders_) { orders = orders_; }
 
+    public void addOrder(Order o) throws Exception{
+        orders.add(o);
+    }
+
     public boolean hasOrder(String orderId){
         for (Order value : orders){
             if (value.getOrderID().equals(orderId)) {
@@ -99,6 +97,19 @@ public class CISUser {
             }
         }
         return false;
+    }
+
+    public void removeOrder(Order o){
+        orders.remove(o);
+    }
+
+    public Order getOrder(String orderId){
+        for (Order value : orders){
+            if (value.getOrderID().equals(orderId)) {
+                return value;
+            }
+        }
+        return null;
     }
 
 }

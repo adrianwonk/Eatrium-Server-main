@@ -4,13 +4,16 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Order {
-    private String itemID;
-    private String type;
-    private String orderID;
+    private String itemID = "";
+    private String type = "";
+    private String orderID = "";
 
     private static ArrayList<String> existingIds = new ArrayList<>();
 
     public Order(String itemID, String type, String  orderID) throws Exception {
+        if (orderID.isEmpty() || orderID==null){
+            throw new Exception(CISConstants.PARAM_MISSING_ERR);
+        }
         setOrderID(orderID);
         setType(type);
         setItemID(itemID);
