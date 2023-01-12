@@ -15,9 +15,9 @@ public class CISUser {
 
     public CISUser(String userId_, String name_, String yearLevel_) throws Exception {
 
-        int e = setUserId(userId_);
+        boolean e = setUserId(userId_);
 
-        if (e == -1){
+        if (!e){
             throw new Exception(CISConstants.DUP_USER_ERR);
         }
 
@@ -68,26 +68,32 @@ public class CISUser {
 
     public String getYearLevel() { return yearLevel; }
     public String getUserId() { return userId; }
-    public int setUserId(String s) {
+    public boolean setUserId(String s) {
 
-        if (existingIds.contains(s)){
-            return -1;
+        if (EatriumIDs.checkID(s)){
+            return false;
         }
 
-        if (userId.isEmpty()){
-            userId = s;
-            existingIds.add(s);
-            return existingIds.indexOf(s);
-        } else if (existingIds.contains(userId)){
-            existingIds.remove(userId);
-            existingIds.add(s);
-            userId = s;
-            return existingIds.indexOf(s);
+        else if (userId.isEmpty()){
+            if (EatriumIDs.addID(s, 'U')) {
+                userId = s;
+                return true;
+            }
+            else  {
+                return false;
+            }
+        } else if (EatriumIDs.checkUserID(userId)){
+            if (EatriumIDs.changeUserID(userId, s, false))
+            {
+                userId = s;
+                return true;
+            }
+            else return false;
         }
         else {
-            existingIds.add(s);
+            EatriumIDs.addID(s,'U');
             userId = s;
-            return existingIds.indexOf(s);
+            return true;
         }
     }
     public String getName() { return name; }

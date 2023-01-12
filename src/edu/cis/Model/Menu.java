@@ -74,20 +74,22 @@ public class Menu {
     public String getAdminID() {return adminID;}
 
     public void setAdminID(String s) throws Exception{
-        if (existingIds.contains(s)){
+        if (EatriumIDs.checkID(s)){
             throw new Exception(CISConstants.ADMIN_ID_ERR);
         }
 
-        if (adminID.isEmpty()){
-            adminID = s;
-            existingIds.add(s);
-        } else if (existingIds.contains(adminID)){
-            existingIds.remove(adminID);
-            existingIds.add(s);
+        else if (adminID.isEmpty()){
+            if (EatriumIDs.addID(s, 'A'))
+            {
+                adminID = s;
+            }
+
+        } else if (EatriumIDs.checkID(adminID)){
+            EatriumIDs.changeAdminID(adminID, s);
             adminID = s;
         }
         else {
-            existingIds.add(s);
+            EatriumIDs.addID(s, 'A');
             adminID = s;
         }
     }
