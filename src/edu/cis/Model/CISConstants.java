@@ -39,6 +39,9 @@ public class CISConstants
     //add menu item
     //delete menu item
     //get full menu
+
+    public static final String GET_USER = "getUser";
+    public static final String CHECK_USER_EXIST = "checkUserExist";
     public static final String PING = "ping";
     public static final String CREATE_USER = "createUser";
     public static final String PLACE_ORDER = "placeOrder";
@@ -49,7 +52,6 @@ public class CISConstants
     public static final String ADD_MENU_ITEM = "addMenuItem";
     public static final String DELETE_MENU_ITEM = "deleteMenuItem";
     public static final String GET_MENU = "getMenu";
-    public static final String GET_USER = "getUser";
 
     public static final int DEFAULT_NUMBER_ITEMS = 50;
 

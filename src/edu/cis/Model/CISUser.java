@@ -11,7 +11,6 @@ public class CISUser {
     public ArrayList<Order> orders;
     public double money;
 
-    private static ArrayList<String> existingIds = new ArrayList<String>();
 
     public CISUser(String userId_, String name_, String yearLevel_) throws Exception {
 

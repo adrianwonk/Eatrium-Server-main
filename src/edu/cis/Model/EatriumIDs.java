@@ -28,20 +28,16 @@ public class EatriumIDs {
 
     public static boolean checkUserID(String id){
         boolean result = false;
-        for (var value : existingIds.keySet()){
-            if (value.equals(id) && existingIds.get(value).equals('U')){
-                result = true;
-            }
+        if (existingIds.containsKey(id)){
+            if (existingIds.get(id).equals('U')) result = true;
         }
         return result;
     }
 
     public static boolean checkAdminID(String id){
         boolean result = false;
-        for (var value : existingIds.keySet()){
-            if (value.equals(id) && existingIds.get(value).equals('A')){
-                result = true;
-            }
+        if (existingIds.containsKey(id)){
+            if (existingIds.get(id).equals('A')) result = true;
         }
         return result;
     }

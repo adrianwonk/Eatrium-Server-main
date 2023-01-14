@@ -4,7 +4,8 @@ public class Menu {
 
     private ArrayList<MenuItem> eatriumItems;
     private String adminID = "";
-    private static ArrayList<String> existingIds = new ArrayList<>(); // <-- for adminIds
+
+    public static ArrayList<CISUser> registerRequests = new ArrayList<>();
 
     @Override
     public String toString() {
