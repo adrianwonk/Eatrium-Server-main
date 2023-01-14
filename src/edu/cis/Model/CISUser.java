@@ -1,6 +1,7 @@
 package edu.cis.Model;
 
 import java.util.ArrayList;
+import java.text.MessageFormat;
 
 public class CISUser {
     private String userId = "";
@@ -10,13 +11,12 @@ public class CISUser {
     public ArrayList<Order> orders;
     public double money;
 
-    private static ArrayList<String> existingIds = new ArrayList<String>();
 
     public CISUser(String userId_, String name_, String yearLevel_) throws Exception {
 
-        int e = setUserId(userId_);
+        boolean e = setUserId(userId_);
 
-        if (e == -1){
+        if (!e){
             throw new Exception(CISConstants.DUP_USER_ERR);
         }
 
@@ -28,24 +28,29 @@ public class CISUser {
 
     @Override
     public String toString() {
-        String result = "";
 
-        result += "USERID: " + userId;
-        result += "\n";
-        result += "NAME: " + name;
-        result += "\n";
-        result += "YEARLEVEL: " + yearLevel;
-        result += "\n";
-        result += "MONEY: " + money;
-        result += "\n";
-        result += "ORDERS: ";
-
-        for (Order order : orders){
-            result += "\n";
-            result += order.toString();
+        String result = "CISUser{userID='" + userId + "', ";
+        result += "name='" + name + "', ";
+        result += "yearLevel='" + yearLevel + "', ";
+        result += "orders= ";
+        // ADD ORDERS INTO RESULT
+        for (Order value : orders){
+            result += value + ", ";
         }
 
+        result += "money=" + money + "}";
         return result;
+    }
+
+    public String getCart(){
+        String result = "USER ID: " + userId + ", ";
+        result += "NAME: " + name + ", ";
+        result += "orders= ";
+        // ADD ORDERS INTO RESULT
+        for (Order value : orders){
+            result += value + ", ";
+        }
+        return result.substring(0, result.length() - 2);
     }
 
     public int getYearLevelInt(){
@@ -62,26 +67,32 @@ public class CISUser {
 
     public String getYearLevel() { return yearLevel; }
     public String getUserId() { return userId; }
-    public int setUserId(String s) {
+    public boolean setUserId(String s) {
 
-        if (existingIds.contains(s)){
-            return -1;
+        if (EatriumIDs.checkID(s)){
+            return false;
         }
 
-        if (userId.isEmpty()){
-            userId = s;
-            existingIds.add(s);
-            return existingIds.indexOf(s);
-        } else if (existingIds.contains(userId)){
-            existingIds.remove(userId);
-            existingIds.add(s);
-            userId = s;
-            return existingIds.indexOf(s);
+        else if (userId.isEmpty()){
+            if (EatriumIDs.addID(s, 'U')) {
+                userId = s;
+                return true;
+            }
+            else  {
+                return false;
+            }
+        } else if (EatriumIDs.checkUserID(userId)){
+            if (EatriumIDs.changeUserID(userId, s, false))
+            {
+                userId = s;
+                return true;
+            }
+            else return false;
         }
         else {
-            existingIds.add(s);
+            EatriumIDs.addID(s,'U');
             userId = s;
-            return existingIds.indexOf(s);
+            return true;
         }
     }
     public String getName() { return name; }
@@ -92,6 +103,10 @@ public class CISUser {
     public void setYearLevel(String yearLevel_) { yearLevel = yearLevel_; }
     public void setOrders(ArrayList<Order> orders_) { orders = orders_; }
 
+    public void addOrder(Order o) throws Exception{
+        orders.add(o);
+    }
+
     public boolean hasOrder(String orderId){
         for (Order value : orders){
             if (value.getOrderID().equals(orderId)) {
@@ -99,6 +114,19 @@ public class CISUser {
             }
         }
         return false;
+    }
+
+    public void removeOrder(Order o){
+        orders.remove(o);
+    }
+
+    public Order getOrder(String orderId){
+        for (Order value : orders){
+            if (value.getOrderID().equals(orderId)) {
+                return value;
+            }
+        }
+        return null;
     }
 
 }

@@ -117,6 +117,7 @@ public class CIServerTests extends ConsoleProgram
             addRequest.addParam(CISConstants.PRICE_PARAM, String.valueOf(prices[i]));
             addRequest.addParam(CISConstants.ITEM_ID_PARAM, itemIDs[i]);
             addRequest.addParam(CISConstants.ITEM_TYPE_PARAM, orderType[i]);
+            addRequest.addParam(CISConstants.AMOUNT_AVAIL_PARAM, String.valueOf(avail[i]));
 
             success = runTest(addRequest, false, "success");
             total++;
@@ -340,6 +341,14 @@ public class CIServerTests extends ConsoleProgram
         }
 
         println("Passed: " + passed + "/" + total);
+
+        Request cart = new Request(CISConstants.GET_CART);
+        cart.addParam(CISConstants.USER_ID_PARAM, "abcd");
+        try {
+            println(SimpleClient.makeRequest(HOST, cart));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

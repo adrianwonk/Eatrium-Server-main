@@ -4,13 +4,16 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Order {
-    private String itemID;
-    private String type;
-    private String orderID;
+    private String itemID = "";
+    private String type = "";
+    private String orderID = "";
 
     private static ArrayList<String> existingIds = new ArrayList<>();
 
     public Order(String itemID, String type, String  orderID) throws Exception {
+        if (orderID.isEmpty() || orderID==null){
+            throw new Exception(CISConstants.PARAM_MISSING_ERR);
+        }
         setOrderID(orderID);
         setType(type);
         setItemID(itemID);
@@ -18,11 +21,11 @@ public class Order {
 
     @Override
     public String toString() {
-        return "\n\nOrder{" +
-                "itemID='" + itemID + '\'' +
-                ", type='" + type + '\'' +
-                ", orderID='" + orderID + '\'' +
-                '}';
+        String result = "Order{";
+        result += "itemID='" + this.getItemID() + "', ";
+        result += "type='" + this.getType() + "', ";
+        result += "orderID='" + this.getOrderID() + "'}";
+        return result;
     }
 
     public String getItemID() {return itemID;}

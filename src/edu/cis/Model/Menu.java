@@ -4,7 +4,8 @@ public class Menu {
 
     private ArrayList<MenuItem> eatriumItems;
     private String adminID = "";
-    private static ArrayList<String> existingIds = new ArrayList<>(); // <-- for adminIds
+
+    public static ArrayList<CISUser> registerRequests = new ArrayList<>();
 
     @Override
     public String toString() {
@@ -46,18 +47,14 @@ public class Menu {
         }
     }
 
-    public void handleOrder(CISUser u, Order o) throws Exception {
-        o.orderFulfilled();
-        String itemId = o.getItemID();
-        MenuItem item = getEatriumItem(itemId);
-        double price = item.getPrice();
-
-        if (u.getMoney() >= price) {
-            u.setMoney(u.getMoney() - price);
-            item.consume(); // Throws sold out error
-        }
-        else{
-            throw new Exception(CISConstants.USER_BROKE_ERR);
+    public void handleOrder(CISUser u, String oId) throws Exception {
+        Order o;
+        if (u.hasOrder(oId)){
+            o = u.getOrder(oId);
+            o.orderFulfilled();
+            u.removeOrder(o);
+        } else {
+            throw new Exception(CISConstants.ORDER_INVALID_ERR);
         }
     }
 
@@ -78,20 +75,22 @@ public class Menu {
     public String getAdminID() {return adminID;}
 
     public void setAdminID(String s) throws Exception{
-        if (existingIds.contains(s)){
+        if (EatriumIDs.checkID(s)){
             throw new Exception(CISConstants.ADMIN_ID_ERR);
         }
 
-        if (adminID.isEmpty()){
-            adminID = s;
-            existingIds.add(s);
-        } else if (existingIds.contains(adminID)){
-            existingIds.remove(adminID);
-            existingIds.add(s);
+        else if (adminID.isEmpty()){
+            if (EatriumIDs.addID(s, 'A'))
+            {
+                adminID = s;
+            }
+
+        } else if (EatriumIDs.checkID(adminID)){
+            EatriumIDs.changeAdminID(adminID, s);
             adminID = s;
         }
         else {
-            existingIds.add(s);
+            EatriumIDs.addID(s, 'A');
             adminID = s;
         }
     }

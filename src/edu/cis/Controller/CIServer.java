@@ -28,11 +28,9 @@ public class CIServer extends ConsoleProgram
         try {
             menu = new Menu("3");
         } catch (Exception e) {
-            println(e.getMessage());
             e.printStackTrace();
         }
     }
-
     /**
      * Starts the server running so that when a program sends
      * a request to this server, the method requestMade is
@@ -80,16 +78,123 @@ public class CIServer extends ConsoleProgram
             case CISConstants.PLACE_ORDER:
                 return placeOrder(request);
 
+            case CISConstants.DELETE_ORDER:
+                return deleteOrder(request);
+
+            case CISConstants.GET_USER:
+                return getUser(request);
+            case "GET_USER_TYPE":
+                try {
+                    return "" + EatriumIDs.getIDType(request.getParam(CISConstants.USER_ID_PARAM));
+                }
+                catch(Exception e){
+                    return "N";
+                }
+
+            case "MAKE_REGISTER_REQUEST":
+                return makeRegisterRequest(request);
+
+//            case "HANDLE_REGISTER_REQUEST:
+//                return handle
+
+
+            case CISConstants.GET_ORDER:
+                return getOrder(request);
+
+            case CISConstants.GET_ITEM:
+                return getItem(request);
+
+            case CISConstants.GET_CART:
+                return getCart(request);
+
+            case CISConstants.CHECK_USER_EXIST:
+                if (EatriumIDs.checkID(request.getParam(CISConstants.USER_ID_PARAM)))
+                    return "true";
+                else{
+                    return "false";
+                }
+
             default:
                 return "Error: Unknown command " + cmd + ".";
         }
     }
 
-    public String placeOrder(Request req) {
-        String orderId = req.getParam(CISConstants.ORDER_ID_PARAM);
-        String itemId = req.getParam(CISConstants.ITEM_ID_PARAM);
+    public String makeRegisterRequest(Request req) {
+        String uID = req.getParam(CISConstants.USER_ID_PARAM);
+        String name = req.getParam(CISConstants.USER_NAME_PARAM);
+        String yearLevel = req.getParam(CISConstants.YEAR_LEVEL_PARAM);
+
+        try {
+            CISUser u = new CISUser(uID, name, yearLevel);
+            Menu.registerRequests.add(u);
+            return "SUCCESS";
+        }
+        catch(Exception e){
+            return "ERROR";
+        }
+
+    }
+
+    public String getCart(Request req){
+        String uID = req.getParam(CISConstants.USER_ID_PARAM);
+
+        if (uID == null) return CISConstants.PARAM_MISSING_ERR;
+
+        if (userExists(uID)) return getCISUser(uID).getCart();
+        else return CISConstants.USER_INVALID_ERR;
+    }
+    public String getItem(Request req) {
+        String iID = req.getParam(CISConstants.ITEM_ID_PARAM);
+
+        if (iID == null) return CISConstants.PARAM_MISSING_ERR;
+
+        try{
+            MenuItem item = menu.getEatriumItem(iID);
+            return item.toString();
+        }
+        catch (Exception e) {
+            return CISConstants.INVALID_MENU_ITEM_ERR;
+        }
+
+    }
+    public String getOrder(Request req){
+        String uID = req.getParam(CISConstants.USER_ID_PARAM);
+        String oID = req.getParam(CISConstants.ORDER_ID_PARAM);
+
+        if (uID == null || oID == null) return CISConstants.PARAM_MISSING_ERR;
+
+        CISUser u = getCISUser(uID);
+        Order o = u.getOrder(oID);
+
+        return o.toString();
+    }
+    public String getUser(Request req){
         String userId = req.getParam(CISConstants.USER_ID_PARAM);
-        String orderType = req.getParam(CISConstants.ORDER_TYPE_PARAM);
+
+        if (userId == null) return CISConstants.PARAM_MISSING_ERR;
+
+        else if (EatriumIDs.checkID(userId) == false){
+            return CISConstants.USER_INVALID_ERR;
+        }
+
+        else {
+            try {
+                if (EatriumIDs.getIDType(userId) == 'A') {
+                    return "ADMIN";
+                } else {
+                    return "" + getCISUser(userId);
+                }
+            }
+            catch(Exception e){
+                return e.getMessage();
+            }
+        }
+    }
+    public String deleteOrder(Request req){
+        String orderId = req.getParam(CISConstants.ORDER_ID_PARAM);
+        String userId = req.getParam(CISConstants.USER_ID_PARAM);
+
+        if (orderId == null || userId == null) return CISConstants.PARAM_MISSING_ERR;
 
         // user exist?
         if (!userExists(userId)){
@@ -99,17 +204,54 @@ public class CIServer extends ConsoleProgram
         else {
             // get userIndex
             int userIndex = userIndex(userId);
-            if (!users.get(userIndex).hasOrder(orderId)){
-                return CISConstants.ORDER_INVALID_ERR;
-            }
 
             try{
+                menu.handleOrder(users.get(userIndex), orderId);
+            }
+            catch (Exception e){
+                return e.getMessage();
+            }
+        }
+        return CISConstants.SUCCESS;
+    }
+    public String placeOrder(Request req) {
+        String orderId = req.getParam(CISConstants.ORDER_ID_PARAM);
+        String itemId = req.getParam(CISConstants.ITEM_ID_PARAM);
+        String userId = req.getParam(CISConstants.USER_ID_PARAM);
+        String orderType = req.getParam(CISConstants.ORDER_TYPE_PARAM);
+
+        if (orderId == null || itemId == null || userId == null || orderType == null){
+            return CISConstants.PARAM_MISSING_ERR;
+        }
+
+        // user exist?
+        if (!userExists(userId)){
+            return CISConstants.USER_INVALID_ERR;
+        }
+        else {
+            try{
+                CISUser u = getCISUser(userId);
+
+                if (u.hasOrder(orderId)){
+                    return CISConstants.DUP_ORDER_ERR;
+                }
+
                 if (!menu.eatriumIdExists(itemId)){
                     return CISConstants.INVALID_MENU_ITEM_ERR;
                 }
 
                 Order o = new Order(itemId, orderType, orderId);
-                menu.handleOrder(getUser(userId), o); // handles user broke, invalid menu item, sold out
+                MenuItem item = menu.getEatriumItem(itemId);
+                double price = item.getPrice();
+
+                if (u.getMoney() >= price) {
+                    item.consume(); // Throws sold out error
+                    u.setMoney(u.getMoney() - price);
+                    u.addOrder(o);
+                }
+                else{
+                    throw new Exception(CISConstants.USER_BROKE_ERR);
+                }
             }
             catch (Exception e){
                 return e.getMessage();
@@ -120,7 +262,7 @@ public class CIServer extends ConsoleProgram
         return CISConstants.SUCCESS;
     }
 
-    public CISUser getUser(String uID){
+    public CISUser getCISUser(String uID){
         for (CISUser value : users){
             if (value.getUserId().equals(uID)){
                 return value;
@@ -148,14 +290,17 @@ public class CIServer extends ConsoleProgram
         return false;
     }
     public String addMenuItem(Request req) {
-        String itemName = req.getParam(CISConstants.ITEM_ID_PARAM);
+        String itemName = req.getParam(CISConstants.ITEM_NAME_PARAM);
         String description = req.getParam(CISConstants.DESC_PARAM);
         double price = Double.parseDouble(req.getParam(CISConstants.PRICE_PARAM));
         String type = req.getParam(CISConstants.ITEM_TYPE_PARAM);
         String id = req.getParam(CISConstants.ITEM_ID_PARAM);
+        int amountAvail = Integer.parseInt(req.getParam(CISConstants.AMOUNT_AVAIL_PARAM));
+
+        if (itemName == null || description == null || type == null || id == null) return CISConstants.PARAM_MISSING_ERR;
 
         try {
-            MenuItem m = new MenuItem(itemName, description, price, id, CISConstants.DEFAULT_NUMBER_ITEMS, type);
+            MenuItem m = new MenuItem(itemName, description, price, id, amountAvail, type);
             menu.addEatriumItem(m);
             return CISConstants.SUCCESS;
         }

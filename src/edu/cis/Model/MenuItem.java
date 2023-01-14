@@ -21,20 +21,13 @@ public class MenuItem {
 
     @Override
     public String toString() {
-        String result = "";
-
-        result += "ITEM ID: " + id;
-        result += "\n";
-        result += "NAME: " + name;
-        result += "\n";
-        result += "DESCRIPTION: " + description;
-        result += "\n";
-        result += "PRICE: " + price;
-        result += "\n";
-        result += "AMOUNT AVAILABLE: " + amountAvailable;
-        result += "\n";
-        result += "TYPE: " + type;
-
+        String result = "MenuItem{";
+        result += "name='" + this.name + "', ";
+        result += "description='" + this.description + "', ";
+        result += "price=" + price + ", ";
+        result += "id='" + id + ", ";
+        result += "amountAvailable=" + amountAvailable + ", ";
+        result += "type='" + type + "'}";
         return result;
     }
 
@@ -62,5 +55,4 @@ public class MenuItem {
         }
     }
     public void restock() {amountAvailable = CISConstants.DEFAULT_NUMBER_ITEMS;}
-
 }
