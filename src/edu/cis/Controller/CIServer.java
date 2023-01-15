@@ -120,17 +120,27 @@ public class CIServer extends ConsoleProgram
     }
 
     public String makeRegisterRequest(Request req) {
-        String uID = req.getParam(CISConstants.USER_ID_PARAM);
-        String name = req.getParam(CISConstants.USER_NAME_PARAM);
-        String yearLevel = req.getParam(CISConstants.YEAR_LEVEL_PARAM);
 
         try {
-            CISUser u = new CISUser(uID, name, yearLevel);
-            Menu.registerRequests.add(u);
-            return "SUCCESS";
+            String uID = req.getParam(CISConstants.USER_ID_PARAM);
+            String name = req.getParam(CISConstants.USER_NAME_PARAM);
+            String yearLevel = req.getParam(CISConstants.YEAR_LEVEL_PARAM);
+
+            if (uID.equals("") || name.equals("") || yearLevel.equals("")) {
+                return "MISSING_PARAMS";
+            }
+
+            try {
+                CISUser u = new CISUser(uID, name, yearLevel);
+                Menu.registerRequests.add(u);
+                return "SUCCESS";
+            } catch (Exception e) {
+                return "ERR: " + e.getMessage();
+            }
         }
+
         catch(Exception e){
-            return "ERROR";
+            return "ERR: " + e.getMessage();
         }
 
     }
