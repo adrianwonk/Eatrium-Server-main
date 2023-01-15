@@ -7,6 +7,17 @@ public class Menu {
 
     public static ArrayList<CISUser> registerRequests = new ArrayList<>();
 
+    public static CISUser getRequest(String id){
+        for (int i = 0; i < registerRequests.size(); i++){
+            var value = registerRequests.get(i);
+            if (value.getUserId().equals(id)){
+                return value;
+            }
+        }
+
+        return null;
+    }
+
     @Override
     public String toString() {
         String result = "";

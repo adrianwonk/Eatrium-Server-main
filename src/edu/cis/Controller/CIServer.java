@@ -94,8 +94,8 @@ public class CIServer extends ConsoleProgram
             case "MAKE_REGISTER_REQUEST":
                 return makeRegisterRequest(request);
 
-//            case "HANDLE_REGISTER_REQUEST:
-//                return handle
+            case "HANDLE_REGISTER_REQUEST:
+                return handleRequest(request);
 
 
             case CISConstants.GET_ORDER:
@@ -143,6 +143,32 @@ public class CIServer extends ConsoleProgram
             return "ERR: " + e.getMessage();
         }
 
+    }
+
+    public String handleRequest(Request req){
+        String uID = req.getParam(CISConstants.USER_ID_PARAM);
+        String accept = req.getParam("ACCEPT");
+        boolean acceptB = accept.equals("y");
+        CISUser user = Menu.getRequest(uID);
+        if (user != null){
+            if (acceptB){
+                users.add(user);
+                Menu.registerRequests.remove(user);
+                if (Menu.getRequest(uID) == null && getCISUser(uID) != null)
+                    return "successfully added user from requests";
+            }
+
+            else {
+                Menu.registerRequests.remove(user);
+                if (Menu.getRequest(uID) == null && getCISUser(uID) == null)
+                    return "successfully removed user from requests";
+                else{
+                    return "unsuccessfully removed user from requests";
+                }
+            }
+        }
+
+        return "usernotfound in requests";
     }
 
     public String getCart(Request req){
