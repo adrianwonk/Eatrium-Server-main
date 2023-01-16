@@ -94,8 +94,16 @@ public class CIServer extends ConsoleProgram
             case "MAKE_REGISTER_REQUEST":
                 return makeRegisterRequest(request);
 
-            case "HANDLE_REGISTER_REQUEST:
+            case "HANDLE_REGISTER_REQUEST":
                 return handleRequest(request);
+
+            case "GET_ACC_REQUESTS":
+                String result = "";
+                for (CISUser value: Menu.registerRequests){
+                    result += value;
+                    result +="'''";
+                }
+                return result;
 
 
             case CISConstants.GET_ORDER:
@@ -168,7 +176,7 @@ public class CIServer extends ConsoleProgram
             }
         }
 
-        return "usernotfound in requests";
+        return "user not found in requests";
     }
 
     public String getCart(Request req){

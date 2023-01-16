@@ -37,7 +37,8 @@ public class CISUser {
         for (Order value : orders){
             result += value + ", ";
         }
-
+        if (result.charAt(result.length()-2)!=',')
+            result += ", ";
         result += "money=" + money + "}";
         return result;
     }
