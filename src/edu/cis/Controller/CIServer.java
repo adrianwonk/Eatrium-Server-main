@@ -153,7 +153,7 @@ public class CIServer extends ConsoleProgram
 
     }
 
-    public String handleRequest(Request req){
+    public String handleRequest(Request req) {
         String uID = req.getParam(CISConstants.USER_ID_PARAM);
         String accept = req.getParam("ACCEPT");
         boolean acceptB = accept.equals("y");
@@ -161,14 +161,17 @@ public class CIServer extends ConsoleProgram
         if (user != null){
             if (acceptB){
                 users.add(user);
+                user.upgradeUser();
                 Menu.registerRequests.remove(user);
-                if (Menu.getRequest(uID) == null && getCISUser(uID) != null)
+                if (Menu.getRequest(uID) == null && getCISUser(uID) != null && EatriumIDs.getIDType(uID) == 'U')
                     return "successfully added user from requests";
+                else return "unsuccessfully added user from requests";
             }
 
             else {
                 Menu.registerRequests.remove(user);
-                if (Menu.getRequest(uID) == null && getCISUser(uID) == null)
+                EatriumIDs.removeID(uID);
+                if (Menu.getRequest(uID) == null && getCISUser(uID) == null && !EatriumIDs.checkID(uID))
                     return "successfully removed user from requests";
                 else{
                     return "unsuccessfully removed user from requests";

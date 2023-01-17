@@ -74,15 +74,15 @@ public class CISUser {
             return false;
         }
 
-        else if (userId.isEmpty()){
-            if (EatriumIDs.addID(s, 'U')) {
+        else if (userId.equals("")){
+            if (EatriumIDs.addID(s, 'R')) {
                 userId = s;
                 return true;
             }
             else  {
                 return false;
             }
-        } else if (EatriumIDs.checkUserID(userId)){
+        } else if (EatriumIDs.checkID(userId)){
             if (EatriumIDs.changeUserID(userId, s, false))
             {
                 userId = s;
@@ -91,10 +91,14 @@ public class CISUser {
             else return false;
         }
         else {
-            EatriumIDs.addID(s,'U');
+            EatriumIDs.addID(s,'R');
             userId = s;
             return true;
         }
+    }
+
+    public void upgradeUser(){
+        EatriumIDs.changeUserID(this.userId, this.userId, true);
     }
     public String getName() { return name; }
     public ArrayList<Order> getOrders() { return orders; }
