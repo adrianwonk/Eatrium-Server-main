@@ -105,6 +105,16 @@ public class CIServer extends ConsoleProgram
                 }
                 return result;
 
+            case "GET_MENU_ITEMS":
+                String result2 = "";
+                for(MenuItem value : menu.getEatriumItems()){
+                    result2 += value;
+                    result2 += "'''";
+                }
+                return result2;
+
+
+
 
             case CISConstants.GET_ORDER:
                 return getOrder(request);

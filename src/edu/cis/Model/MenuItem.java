@@ -9,12 +9,23 @@ public class MenuItem {
     private String id;
     int amountAvailable;
     String type;
+    private static int idSetter = 0;
 
     public MenuItem(String name_, String description_, double price_, String id_, int amountAvailable_, String type_) throws Exception {
         setName(name_);
         setDescription(description_);
         setPrice(price_);
         setId(id_);
+        setAmountAvailable(amountAvailable_);
+        setType(type_);
+    }
+
+    public MenuItem(String name_, String description_, double price_, int amountAvailable_, String type_) throws Exception {
+        setName(name_);
+        setDescription(description_);
+        setPrice(price_);
+        setId("" + idSetter);
+        idSetter++;
         setAmountAvailable(amountAvailable_);
         setType(type_);
     }

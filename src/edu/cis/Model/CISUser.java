@@ -98,7 +98,9 @@ public class CISUser {
     }
 
     public void upgradeUser(){
-        EatriumIDs.changeUserID(this.userId, this.userId, true);
+        if (EatriumIDs.checkID(getUserId())){
+            EatriumIDs.existingIds.put(getUserId(), 'U');
+        }
     }
     public String getName() { return name; }
     public ArrayList<Order> getOrders() { return orders; }

@@ -10,7 +10,7 @@ public class EatriumIDs {
     // U for user
     // R for register
 
-    public static Map<String, Character> existingIds = new HashMap<String, Character>();
+    protected static Map<String, Character> existingIds = new HashMap<String, Character>();
 
     public static void removeID(String id){
         if (existingIds.containsKey(id))
