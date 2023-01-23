@@ -293,7 +293,7 @@ public class CIServer extends ConsoleProgram
                     return CISConstants.DUP_ORDER_ERR;
                 }
 
-                if (!menu.eatriumIdExists(itemId)){
+                if (!menu.itemIDExists(itemId)){
                     return CISConstants.INVALID_MENU_ITEM_ERR;
                 }
 
@@ -354,11 +354,28 @@ public class CIServer extends ConsoleProgram
         String id = req.getParam(CISConstants.ITEM_ID_PARAM);
         int amountAvail = Integer.parseInt(req.getParam(CISConstants.AMOUNT_AVAIL_PARAM));
 
-        if (itemName == null || description == null || type == null || id == null) return CISConstants.PARAM_MISSING_ERR;
+        if (itemName == null || description == null || type == null) return CISConstants.PARAM_MISSING_ERR;
 
         try {
-            MenuItem m = new MenuItem(itemName, description, price, id, amountAvail, type);
-            menu.addEatriumItem(m);
+            if (!(id == null)) {
+                if (!menu.itemIDExists(id)){
+                    MenuItem m = new MenuItem(itemName, description, price, id, amountAvail, type);
+                    menu.addEatriumItem(m);
+                }
+                else{
+                    MenuItem m = menu.getEatriumItem(id);
+                    m.setName(itemName);
+                    m.setDescription(description);
+                    m.setPrice(price);
+                    m.setType(type);
+                    m.setId(id);
+                    m.setAmountAvailable(amountAvail);
+                }
+            }
+            else{
+                MenuItem m = new MenuItem(itemName, description, price, amountAvail, type);
+                menu.addEatriumItem(m);
+            }
             return CISConstants.SUCCESS;
         }
         catch (Exception e){

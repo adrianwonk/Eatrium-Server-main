@@ -40,7 +40,7 @@ public class Menu {
         return eatriumItems;
     }
 
-    public boolean eatriumIdExists(String itemId) {
+    public boolean itemIDExists(String itemId) {
         for (MenuItem value : eatriumItems){
             if (value.getId().equals(itemId)){
                 return true;
@@ -50,7 +50,7 @@ public class Menu {
     }
 
     public void addEatriumItem(MenuItem i) throws Exception {
-        if (!eatriumIdExists(i.getId())) {
+        if (!itemIDExists(i.getId())) {
             eatriumItems.add(i);
         }
         else{
