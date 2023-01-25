@@ -11,6 +11,7 @@ import acm.program.*;
 import edu.cis.Utils.SimpleServer;
 import edu.cis.Model.*;
 
+import java.rmi.server.UID;
 import java.util.ArrayList;
 
 public class CIServer extends ConsoleProgram
@@ -24,6 +25,8 @@ public class CIServer extends ConsoleProgram
     private SimpleServer server = new SimpleServer(this, PORT);
     private ArrayList<CISUser> users = new ArrayList<>();
     private Menu menu;
+
+    private static int orderIdSetter = 0;
     {
         try {
             menu = new Menu("3");
@@ -113,6 +116,18 @@ public class CIServer extends ConsoleProgram
                 }
                 return result2;
 
+            case "ADD_TO_CART":
+                return addToCart(request);
+
+            case "REMOVE_FROM_CART":
+                return removeFromCart(request);
+
+            case "CHECKOUT_CART":
+                return checkOutCart(request);
+
+            case "GET_CART_TOTAL":
+                return getCartTotal(request);
+
 
 
 
@@ -195,7 +210,7 @@ public class CIServer extends ConsoleProgram
     public String getCart(Request req){
         String uID = req.getParam(CISConstants.USER_ID_PARAM);
 
-        if (uID == null) return CISConstants.PARAM_MISSING_ERR;
+        if (uID.isEmpty()) return CISConstants.PARAM_MISSING_ERR;
 
         if (userExists(uID)) return getCISUser(uID).getCart();
         else return CISConstants.USER_INVALID_ERR;
@@ -203,7 +218,7 @@ public class CIServer extends ConsoleProgram
     public String getItem(Request req) {
         String iID = req.getParam(CISConstants.ITEM_ID_PARAM);
 
-        if (iID == null) return CISConstants.PARAM_MISSING_ERR;
+        if (iID.isEmpty()) return CISConstants.PARAM_MISSING_ERR;
 
         try{
             MenuItem item = menu.getEatriumItem(iID);
@@ -218,7 +233,7 @@ public class CIServer extends ConsoleProgram
         String uID = req.getParam(CISConstants.USER_ID_PARAM);
         String oID = req.getParam(CISConstants.ORDER_ID_PARAM);
 
-        if (uID == null || oID == null) return CISConstants.PARAM_MISSING_ERR;
+        if (uID.isEmpty() || oID.isEmpty()) return CISConstants.PARAM_MISSING_ERR;
 
         CISUser u = getCISUser(uID);
         Order o = u.getOrder(oID);
@@ -228,7 +243,7 @@ public class CIServer extends ConsoleProgram
     public String getUser(Request req){
         String userId = req.getParam(CISConstants.USER_ID_PARAM);
 
-        if (userId == null) return CISConstants.PARAM_MISSING_ERR;
+        if (userId.isEmpty()) return CISConstants.PARAM_MISSING_ERR;
 
         else if (EatriumIDs.checkID(userId) == false){
             return CISConstants.USER_INVALID_ERR;
@@ -251,7 +266,7 @@ public class CIServer extends ConsoleProgram
         String orderId = req.getParam(CISConstants.ORDER_ID_PARAM);
         String userId = req.getParam(CISConstants.USER_ID_PARAM);
 
-        if (orderId == null || userId == null) return CISConstants.PARAM_MISSING_ERR;
+        if (orderId.isEmpty() || userId.isEmpty()) return CISConstants.PARAM_MISSING_ERR;
 
         // user exist?
         if (!userExists(userId)){
@@ -271,13 +286,113 @@ public class CIServer extends ConsoleProgram
         }
         return CISConstants.SUCCESS;
     }
+
+    public String getCartTotal(Request req){
+        String uID = req.getParam(CISConstants.USER_ID_PARAM);
+        try {
+            return "" + getCISUser(uID).getCartTotal(menu);
+        }
+        catch (Exception e){
+            return e.getMessage();
+        }
+    }
+
+    public String addToCart (Request req){
+        String itemId = req.getParam(CISConstants.ITEM_ID_PARAM);
+        String userId = req.getParam(CISConstants.USER_ID_PARAM);
+
+        if (itemId.isEmpty() || userId.isEmpty()){
+            return CISConstants.PARAM_MISSING_ERR;
+        }
+        else{
+            CISUser u = getCISUser(userId);
+            if (u == null){
+                return CISConstants.USER_INVALID_ERR;
+            }
+            else {
+                try{
+                    MenuItem i = menu.getEatriumItem(itemId);
+                    i.consume();
+                    Order o = new Order(itemId, "", "" + orderIdSetter);
+                    orderIdSetter++;
+                    u.addOrder(o);
+                    return CISConstants.SUCCESS;
+                }
+                catch (Exception e) {
+                    return e.getMessage();
+                }
+            }
+        }
+    }
+
+    public String removeFromCart(Request req) {
+//        handles the orders
+//        adds item back to amountAvail
+
+        String uID = req.getParam(CISConstants.USER_ID_PARAM);
+        String oID = req.getParam(CISConstants.ORDER_ID_PARAM);
+
+        CISUser u = getCISUser(uID);
+        Order o = u.getOrder(oID);
+
+        if (u == null){
+            return CISConstants.USER_INVALID_ERR;
+        }
+        else if (o == null) {
+            return CISConstants.ORDER_INVALID_ERR;
+        } else {
+
+            try {
+                MenuItem i = menu.getEatriumItem(o.getItemID());
+                menu.handleOrder(u, oID);
+                i.setAmountAvailable(i.getAmountAvailable() + 1);
+                return CISConstants.SUCCESS;
+            } catch (Exception e) {
+                return e.getMessage();
+            }
+
+        }
+    }
+
+    public String checkOutCart(Request req){
+//        Checks out all items from cart
+//          check if user is broke
+//              if broke return broke err
+//              else handle all orders and minus balance
+
+        String uID = req.getParam(CISConstants.USER_ID_PARAM);
+
+        CISUser u = getCISUser(uID);
+        if (u == null){
+            return CISConstants.USER_INVALID_ERR;
+        } else {
+
+            try{
+                double total = u.getCartTotal(menu);
+                if (total <= u.getMoney()){
+                    for (Order o : u.orders){
+                        menu.handleOrder(u, o.getOrderID());
+                    }
+                    u.setMoney(u.getMoney()-total);
+                }
+                else {
+                    return CISConstants.USER_BROKE_ERR;
+                }
+            } catch (Exception e) {
+                return e.getMessage();
+            }
+
+        }
+        return CISConstants.SUCCESS;
+    }
+
     public String placeOrder(Request req) {
         String orderId = req.getParam(CISConstants.ORDER_ID_PARAM);
         String itemId = req.getParam(CISConstants.ITEM_ID_PARAM);
         String userId = req.getParam(CISConstants.USER_ID_PARAM);
         String orderType = req.getParam(CISConstants.ORDER_TYPE_PARAM);
 
-        if (orderId == null || itemId == null || userId == null || orderType == null){
+        if (orderId.isEmpty() || itemId.isEmpty() || userId.isEmpty() || orderType.isEmpty()){
             return CISConstants.PARAM_MISSING_ERR;
         }
 
@@ -349,15 +464,17 @@ public class CIServer extends ConsoleProgram
     public String addMenuItem(Request req) {
         String itemName = req.getParam(CISConstants.ITEM_NAME_PARAM);
         String description = req.getParam(CISConstants.DESC_PARAM);
-        double price = Double.parseDouble(req.getParam(CISConstants.PRICE_PARAM));
+        double price = 0;
+        if (!req.getParam(CISConstants.PRICE_PARAM).isEmpty()) price = Double.parseDouble(req.getParam(CISConstants.PRICE_PARAM));
         String type = req.getParam(CISConstants.ITEM_TYPE_PARAM);
         String id = req.getParam(CISConstants.ITEM_ID_PARAM);
-        int amountAvail = Integer.parseInt(req.getParam(CISConstants.AMOUNT_AVAIL_PARAM));
+        int amountAvail = 0;
+        if (!req.getParam(CISConstants.AMOUNT_AVAIL_PARAM).isEmpty()) amountAvail = Integer.parseInt(req.getParam(CISConstants.AMOUNT_AVAIL_PARAM));
 
-        if (itemName == null || description == null || type == null) return CISConstants.PARAM_MISSING_ERR;
+        if (itemName.isEmpty() || description.isEmpty() || type.isEmpty()) return CISConstants.PARAM_MISSING_ERR;
 
         try {
-            if (!(id == null)) {
+            if (!(id == null || id.isEmpty())) {
                 if (!menu.itemIDExists(id)){
                     MenuItem m = new MenuItem(itemName, description, price, id, amountAvail, type);
                     menu.addEatriumItem(m);

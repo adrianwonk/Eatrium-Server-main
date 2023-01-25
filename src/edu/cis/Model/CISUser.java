@@ -54,6 +54,14 @@ public class CISUser {
         return result.substring(0, result.length() - 2);
     }
 
+    public double getCartTotal(Menu menu) throws Exception {
+        double result = 0;
+        for (Order o : orders){
+            result += menu.getEatriumItem(o.getItemID()).getPrice();
+        }
+        return result;
+    }
+
     public int getYearLevelInt(){
         char chars[] = yearLevel.toCharArray();
         String result = "";
