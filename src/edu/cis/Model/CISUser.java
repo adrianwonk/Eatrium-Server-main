@@ -43,17 +43,6 @@ public class CISUser {
         return result;
     }
 
-    public String getCart(){
-        String result = "USER ID: " + userId + ", ";
-        result += "NAME: " + name + ", ";
-        result += "orders= ";
-        // ADD ORDERS INTO RESULT
-        for (Order value : orders){
-            result += value + ", ";
-        }
-        return result.substring(0, result.length() - 2);
-    }
-
     public double getCartTotal(Menu menu) throws Exception {
         double result = 0;
         for (Order o : orders){

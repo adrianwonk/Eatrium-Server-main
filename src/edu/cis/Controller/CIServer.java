@@ -137,9 +137,6 @@ public class CIServer extends ConsoleProgram
             case CISConstants.GET_ITEM:
                 return getItem(request);
 
-            case CISConstants.GET_CART:
-                return getCart(request);
-
             case CISConstants.CHECK_USER_EXIST:
                 if (EatriumIDs.checkID(request.getParam(CISConstants.USER_ID_PARAM)))
                     return "true";
@@ -207,14 +204,6 @@ public class CIServer extends ConsoleProgram
         return "user not found in requests";
     }
 
-    public String getCart(Request req){
-        String uID = req.getParam(CISConstants.USER_ID_PARAM);
-
-        if (uID.isEmpty()) return CISConstants.PARAM_MISSING_ERR;
-
-        if (userExists(uID)) return getCISUser(uID).getCart();
-        else return CISConstants.USER_INVALID_ERR;
-    }
     public String getItem(Request req) {
         String iID = req.getParam(CISConstants.ITEM_ID_PARAM);
 
