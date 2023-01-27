@@ -107,7 +107,7 @@ public class CISUser {
     public void setYearLevel(String yearLevel_) { yearLevel = yearLevel_; }
     public void setOrders(ArrayList<Order> orders_) { orders = orders_; }
 
-    public void addOrder(Order o) throws Exception{
+    public void addOrder(Order o){
         orders.add(o);
     }
 

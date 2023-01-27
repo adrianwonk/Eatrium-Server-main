@@ -326,9 +326,6 @@ public class CIServer extends ConsoleProgram
 
         if (u == null){
             return CISConstants.USER_INVALID_ERR;
-        }
-        else if (o == null) {
-            return CISConstants.ORDER_INVALID_ERR;
         } else {
 
             try {
@@ -359,7 +356,11 @@ public class CIServer extends ConsoleProgram
             try{
                 double total = u.getCartTotal(menu);
                 if (total <= u.getMoney()){
-                    for (Order o : u.orders){
+                    ArrayList<Order> tempArr = new ArrayList<>();
+                    for (Order o : u.orders)
+                        tempArr.add(o);
+
+                    for (Order o : tempArr){
                         menu.handleOrder(u, o.getOrderID());
                     }
                     u.setMoney(u.getMoney()-total);
@@ -376,12 +377,18 @@ public class CIServer extends ConsoleProgram
     }
 
     public String placeOrder(Request req) {
-        String orderId = req.getParam(CISConstants.ORDER_ID_PARAM);
-        String itemId = req.getParam(CISConstants.ITEM_ID_PARAM);
-        String userId = req.getParam(CISConstants.USER_ID_PARAM);
-        String orderType = req.getParam(CISConstants.ORDER_TYPE_PARAM);
+        String orderId = "";
+        String itemId = "";
+        String userId = "";
+        String orderType = "";
 
-        if (orderId.isEmpty() || itemId.isEmpty() || userId.isEmpty() || orderType.isEmpty()){
+
+        orderId = req.getParam(CISConstants.ORDER_ID_PARAM);
+        itemId = req.getParam(CISConstants.ITEM_ID_PARAM);
+        userId = req.getParam(CISConstants.USER_ID_PARAM);
+        orderType = req.getParam(CISConstants.ORDER_TYPE_PARAM);
+
+        if (orderId == null || itemId == null || userId == null || orderType == null){
             return CISConstants.PARAM_MISSING_ERR;
         }
 
@@ -415,7 +422,7 @@ public class CIServer extends ConsoleProgram
                 }
             }
             catch (Exception e){
-                return e.getMessage();
+                return CISConstants.ORDER_INVALID_ERR;
             }
 
 
