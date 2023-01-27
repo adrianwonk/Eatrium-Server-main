@@ -341,14 +341,6 @@ public class CIServerTests extends ConsoleProgram
         }
 
         println("Passed: " + passed + "/" + total);
-
-        Request cart = new Request(CISConstants.GET_CART);
-        cart.addParam(CISConstants.USER_ID_PARAM, "abcd");
-        try {
-            println(SimpleClient.makeRequest(HOST, cart));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     /**
