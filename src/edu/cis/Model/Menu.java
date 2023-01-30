@@ -14,7 +14,6 @@ public class Menu {
                 return value;
             }
         }
-
         return null;
     }
 
@@ -64,7 +63,8 @@ public class Menu {
             o = u.getOrder(oId);
             o.orderFulfilled();
             u.removeOrder(o);
-        } else {
+        }
+        else {
             throw new Exception(CISConstants.ORDER_INVALID_ERR);
         }
     }
@@ -78,14 +78,15 @@ public class Menu {
         throw new Exception(CISConstants.INVALID_MENU_ITEM_ERR);
     }
 
-
     public void setEatriumItems(ArrayList<MenuItem> eatriumItems) {
         this.eatriumItems = eatriumItems;
     }
 
-    public String getAdminID() {return adminID;}
+    public String getAdminID() {
+        return adminID;
+    }
 
-    public void setAdminID(String s) throws Exception{
+    public void setAdminID(String s) throws Exception {
         if (EatriumIDs.checkID(s)){
             throw new Exception(CISConstants.ADMIN_ID_ERR);
         }
@@ -96,7 +97,8 @@ public class Menu {
                 adminID = s;
             }
 
-        } else if (EatriumIDs.checkID(adminID)){
+        }
+        else if (EatriumIDs.checkID(adminID)){
             EatriumIDs.changeAdminID(adminID, s);
             adminID = s;
         }
@@ -105,5 +107,4 @@ public class Menu {
             adminID = s;
         }
     }
-
 }

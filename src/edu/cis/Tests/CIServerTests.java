@@ -357,7 +357,8 @@ public class CIServerTests extends ConsoleProgram
             {
                 println("Test failed. Expected an error but didn't get one\n");
                 return false;
-            } else if (!result.equals(expectedSuccessOutput))
+            }
+            else if (!result.equals(expectedSuccessOutput))
             {
                 println("Test failed.");
                 println("Expected response: " + expectedSuccessOutput);

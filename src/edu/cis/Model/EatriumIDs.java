@@ -28,21 +28,23 @@ public class EatriumIDs {
     }
 
     public static boolean checkID (String id){
-        if (existingIds.containsKey(id)) return true;
-        else return false;
+        if (existingIds.containsKey(id))
+            return true;
+        else
+            return false;
     }
 
     public static boolean checkAdminID(String id){
         boolean result = false;
         if (existingIds.containsKey(id)){
-            if (existingIds.get(id).equals('A')) result = true;
+            if (existingIds.get(id).equals('A'))
+                result = true;
         }
         return result;
     }
 
-    public static boolean changeUserID(String id, String newId, boolean promote){
+    public static boolean changeUserID(String id, String newId, boolean promote) {
         Character t = 'U';
-
         if (!promote)
             t = 'R';
 
@@ -60,7 +62,7 @@ public class EatriumIDs {
         }
     }
 
-    public static boolean changeAdminID(String id, String newId){
+    public static boolean changeAdminID(String id, String newId) {
         Character t = 'A';
         if (checkAdminID(id)) {
             if (addID(newId, t)) {
@@ -76,10 +78,10 @@ public class EatriumIDs {
         }
     }
 
-
     public static Character getIDType (String id) { //gives A or U
-        if (existingIds.containsKey(id)) return existingIds.get(id);
-        else {return 'N';}
+        if (existingIds.containsKey(id))
+            return existingIds.get(id);
+        else
+            return 'N';
     }
-
 }

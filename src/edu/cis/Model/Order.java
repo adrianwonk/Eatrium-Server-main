@@ -39,10 +39,11 @@ public class Order {
             throw new Exception(CISConstants.DUP_ORDER_ERR);
         }
 
-        if (orderID.isEmpty()){
+        if (orderID.isEmpty()) {
             orderID = s;
             existingIds.add(s);
-        } else if (existingIds.contains(orderID)){
+        }
+        else if (existingIds.contains(orderID)){
             existingIds.remove(orderID);
             existingIds.add(s);
             orderID = s;
@@ -62,6 +63,4 @@ public class Order {
     public void setType(String type) {
         this.type = type;
     }
-
-
 }

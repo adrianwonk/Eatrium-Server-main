@@ -11,7 +11,8 @@ public class MenuItem {
     String type;
     private static int idSetter = 0;
 
-    public MenuItem(String name_, String description_, double price_, String id_, int amountAvailable_, String type_) throws Exception {
+    public MenuItem(String name_, String description_, double price_
+    , String id_, int amountAvailable_, String type_) {
         setName(name_);
         setDescription(description_);
         setPrice(price_);
@@ -20,7 +21,8 @@ public class MenuItem {
         setType(type_);
     }
 
-    public MenuItem(String name_, String description_, double price_, int amountAvailable_, String type_) throws Exception {
+    public MenuItem(String name_, String description_, double price_
+    , int amountAvailable_, String type_) {
         setName(name_);
         setDescription(description_);
         setPrice(price_);
@@ -65,5 +67,7 @@ public class MenuItem {
             amountAvailable --;
         }
     }
-    public void restock() {amountAvailable = CISConstants.DEFAULT_NUMBER_ITEMS;}
+    public void restock() {
+        amountAvailable = CISConstants.DEFAULT_NUMBER_ITEMS;
+    }
 }

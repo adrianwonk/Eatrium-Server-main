@@ -11,11 +11,9 @@ public class CISUser {
     public ArrayList<Order> orders;
     public double money;
 
-
-    public CISUser(String userId_, String name_, String yearLevel_) throws Exception {
-
+    public CISUser(String userId_, String name_, String yearLevel_)
+    throws Exception {
         boolean e = setUserId(userId_);
-
         if (!e){
             throw new Exception(CISConstants.DUP_USER_ERR);
         }
@@ -28,7 +26,6 @@ public class CISUser {
 
     @Override
     public String toString() {
-
         String result = "CISUser{userID='" + userId + "', ";
         result += "name='" + name + "', ";
         result += "yearLevel='" + yearLevel + "', ";
@@ -65,27 +62,27 @@ public class CISUser {
 
     public String getYearLevel() { return yearLevel; }
     public String getUserId() { return userId; }
-    public boolean setUserId(String s) {
 
+    public boolean setUserId(String s) {
         if (EatriumIDs.checkID(s)){
             return false;
         }
-
         else if (userId.equals("")){
             if (EatriumIDs.addID(s, 'R')) {
                 userId = s;
                 return true;
             }
-            else  {
+            else {
                 return false;
             }
-        } else if (EatriumIDs.checkID(userId)){
-            if (EatriumIDs.changeUserID(userId, s, false))
-            {
+        }
+        else if (EatriumIDs.checkID(userId)){
+            if (EatriumIDs.changeUserID(userId, s, false)) {
                 userId = s;
                 return true;
             }
-            else return false;
+            else
+                return false;
         }
         else {
             EatriumIDs.addID(s,'R');
@@ -99,6 +96,7 @@ public class CISUser {
             EatriumIDs.existingIds.put(getUserId(), 'U');
         }
     }
+
     public String getName() { return name; }
     public ArrayList<Order> getOrders() { return orders; }
     public double getMoney() { return money; }
@@ -106,7 +104,6 @@ public class CISUser {
     public void setName(String name_) { name = name_; }
     public void setYearLevel(String yearLevel_) { yearLevel = yearLevel_; }
     public void setOrders(ArrayList<Order> orders_) { orders = orders_; }
-
     public void addOrder(Order o){
         orders.add(o);
     }
@@ -132,5 +129,4 @@ public class CISUser {
         }
         return null;
     }
-
 }
